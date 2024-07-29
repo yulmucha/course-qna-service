@@ -19,6 +19,9 @@ class QuestionRepositoryTest {
     @Autowired
     private QuestionRepository questionRepository;
 
+    @Autowired
+    UserRepository userRepository;
+
     @PersistenceContext
     EntityManager em;
 
@@ -27,7 +30,9 @@ class QuestionRepositoryTest {
     void saveQuestionTest() {
         // given
         // - Question 객체를 생성한다. (제목: "제목", 내용: "내용")
+        User 작성자 = userRepository.save(new User("", "", "", ""));
         Question 질문 = new Question("제목", "내용");
+        질문.writeBy(작성자);
         assertThat(질문.getId()).isNull();
 
         // when
@@ -48,8 +53,11 @@ class QuestionRepositoryTest {
     void findAllQuestionTest() {
         // given
         // - 2개의 Question을 생성하고 저장한다. (제목1: "제목1", 내용1: "내용1"), (제목2: "제목2", 내용2: "내용2")
+        User 작성자 = userRepository.save(new User("", "", "", ""));
         Question 질문1 = new Question("제목", "내용");
         Question 질문2 = new Question("제목", "내용");
+        질문1.writeBy(작성자);
+        질문2.writeBy(작성자);
         questionRepository.saveAll(List.of(질문1, 질문2));
 
         // when
@@ -68,8 +76,11 @@ class QuestionRepositoryTest {
         // given
         // - 2개의 Question을 생성한다. (제목1: "제목1", 내용1: "내용1"), (제목2: "제목2", 내용2: "내용2")
         // - 두 번째 Question의 deleted를 true로 설정하고 저장한다.
+        User 작성자 = userRepository.save(new User("", "", "", ""));
         Question 질문1 = new Question("제목1", "내용");
         Question 질문2 = new Question("제목2", "내용");
+        질문1.writeBy(작성자);
+        질문2.writeBy(작성자);
         질문2.setDeleted(true);
         questionRepository.save(질문1);
         questionRepository.save(질문2);
@@ -90,7 +101,9 @@ class QuestionRepositoryTest {
     void findByIdAndDeletedFalseTest() {
         // given
         // - Question을 생성하고 저장한다. (제목: "제목", 내용: "내용")
+        User 작성자 = userRepository.save(new User("", "", "", ""));
         Question 질문 = new Question("제목", "내용");
+        질문.writeBy(작성자);
         questionRepository.save(질문);
 
         // when
@@ -110,7 +123,9 @@ class QuestionRepositoryTest {
     void saveQuestionWithoutTitleTest() {
         // given
         // - 제목이 null인 Question 객체를 생성한다.
+        User 작성자 = userRepository.save(new User("", "", "", ""));
         Question 질문 = new Question(null, "");
+        질문.writeBy(작성자);
 
         // when & then
         // - 제목이 null인 Question 객체를 저장하면
@@ -126,7 +141,9 @@ class QuestionRepositoryTest {
         // given
         // - 101자의 제목을 가진 Question 객체를 생성한다.
         String longTitle = "a".repeat(101);
+        User 작성자 = userRepository.save(new User("", "", "", ""));
         Question 질문 = new Question(longTitle, "내용");
+        질문.writeBy(작성자);
 
         // when & then
         // - 101자의 제목을 가진 Question 객체를 저장한다.

@@ -23,11 +23,11 @@ public class Answer {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_answer_writer"))
+    @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_answer_writer"))
     private User writer;
 
     @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_answer_to_question"))
+    @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_answer_to_question"))
     private Question question;
 
     @Lob
@@ -81,6 +81,10 @@ public class Answer {
 
     public Long getWriterId() {
         return writer.getId();
+    }
+
+    public User getWriter() {
+        return writer;
     }
 
     public Long getQuestionId() {

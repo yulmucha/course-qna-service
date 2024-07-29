@@ -33,9 +33,10 @@ public class AnswerRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        user = userRepository.save(new User("user1", "password", "name", "email@test.com"));
-        question = questionRepository.save(new Question("제목", "내용"));
-        question.writeBy(user);
+        this.user = userRepository.save(new User("user1", "password", "name", "email@test.com"));
+        Question 질문 = new Question("제목", "내용");
+        질문.writeBy(user);
+        this.question = questionRepository.save(질문);
     }
 
     @DisplayName("Answer 엔티티 저장 시 ID 생성 및 내용 일치 여부 검증")

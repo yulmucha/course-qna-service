@@ -1,5 +1,7 @@
 package qna.domain;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -15,11 +17,18 @@ public class DeleteHistoryRepositoryTest {
     @Autowired
     private DeleteHistoryRepository deleteHistoryRepository;
 
+    @Autowired
+    UserRepository userRepository;
+
+    @PersistenceContext
+    EntityManager em;
+
     @Test
     public void testSaveDeleteHistory() {
         // Given
         // DeleteHistory 객체를 생성한다. (ContentType, contentId, deletedById, createDate 설정)
-        DeleteHistory deleteHistory = new DeleteHistory(ContentType.ANSWER, 1L, 2L, LocalDateTime.now());
+        User 삭제자 = userRepository.save(new User("", "", "", ""));
+        DeleteHistory deleteHistory = new DeleteHistory(ContentType.ANSWER, 1L, 삭제자, LocalDateTime.now());
 
         // When
         // 생성한 DeleteHistory 객체를 저장한다.
@@ -36,7 +45,8 @@ public class DeleteHistoryRepositoryTest {
     public void testFindDeleteHistoryById() {
         // Given
         // DeleteHistory 객체를 생성하고 저장한다.
-        DeleteHistory saved = deleteHistoryRepository.save(new DeleteHistory(ContentType.ANSWER, 1L, 2L, LocalDateTime.now()));
+        User 삭제자 = userRepository.save(new User("", "", "", ""));
+        DeleteHistory saved = deleteHistoryRepository.save(new DeleteHistory(ContentType.ANSWER, 1L, 삭제자, LocalDateTime.now()));
 
         // When
         // 저장된 DeleteHistory의 ID로 조회한다.
@@ -56,9 +66,10 @@ public class DeleteHistoryRepositoryTest {
     public void testFindAllDeleteHistories() {
         // Given
         // 여러 개의 DeleteHistory 객체를 생성하고 저장한다.
-        DeleteHistory saved1 = deleteHistoryRepository.save(new DeleteHistory(ContentType.ANSWER, 1L, 2L, LocalDateTime.now()));
-        DeleteHistory saved2 = deleteHistoryRepository.save(new DeleteHistory(ContentType.ANSWER, 2L, 2L, LocalDateTime.now()));
-        DeleteHistory saved3 = deleteHistoryRepository.save(new DeleteHistory(ContentType.ANSWER, 3L, 2L, LocalDateTime.now()));
+        User 삭제자 = userRepository.save(new User("", "", "", ""));
+        DeleteHistory saved1 = deleteHistoryRepository.save(new DeleteHistory(ContentType.ANSWER, 1L, 삭제자, LocalDateTime.now()));
+        DeleteHistory saved2 = deleteHistoryRepository.save(new DeleteHistory(ContentType.ANSWER, 2L, 삭제자, LocalDateTime.now()));
+        DeleteHistory saved3 = deleteHistoryRepository.save(new DeleteHistory(ContentType.ANSWER, 3L, 삭제자, LocalDateTime.now()));
 
         // When
         // 모든 DeleteHistory 객체를 조회한다.
