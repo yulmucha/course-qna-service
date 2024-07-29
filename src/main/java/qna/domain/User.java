@@ -1,19 +1,41 @@
 package qna.domain;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import qna.exception.UnAuthorizedException;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
+@Entity
+@Table(name = "users")
 public class User {
     public static final GuestUser GUEST_USER = new GuestUser();
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(length = 20, nullable = false, unique = true)
     private String userId;
+
     private String password;
+
     private String name;
+
     private String email;
 
-    private User() {
+    @Column(columnDefinition = "TIMESTAMP", nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(columnDefinition = "TIMESTAMP")
+    private LocalDateTime updatedAt;
+
+    protected User() {
     }
 
     public User(String userId, String password, String name, String email) {
