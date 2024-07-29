@@ -44,7 +44,7 @@ public class AnswerRepositoryTest {
         // given
         // 사용자와 질문이 주어져 있다.
         // 새로운 답변 내용이 준비되어 있다.
-        Answer 저장할_답변 = new Answer(UserTest.DORAEMON, QuestionTest.Q1, "내용");
+        Answer 저장할_답변 = new Answer(user, question, "내용");
         assertThat(저장할_답변.getId()).isNull(); // 저장하기 전에는 null
 
         // when
@@ -71,7 +71,7 @@ public class AnswerRepositoryTest {
 
         // when
         // 해당 질문의 ID로 삭제되지 않은 답변 목록을 조회한다.
-        List<Answer> answers = answerRepository.findByQuestionIdAndDeletedFalse(question.getId());
+        List<Answer> answers = answerRepository.findByQuestion_IdAndDeletedFalse(question.getId());
 
         // then
         // 조회된 답변 목록의 크기가 삭제되지 않은 답변의 수와 일치해야 한다.
