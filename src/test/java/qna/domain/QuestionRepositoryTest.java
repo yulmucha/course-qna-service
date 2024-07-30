@@ -221,4 +221,98 @@ class QuestionRepositoryTest {
          * */
         assertThat(답변들).hasSize(1);
     }
+
+    @Test
+    @DisplayName("Question만 저장하면, Question의 Answer 리스트(answers)에 포함된 Answer들까지 함께 저장한다")
+    void 질문과함께답변까지저장_검증방법1() {
+        // given
+        // 질문과 그 질문에 대한 답변들이 오브젝트로 있는 상황에서
+        User 유저 = userRepository.save(new User("", "", "", ""));
+        Question 질문 = new Question("", "");
+        질문.writeBy(유저);
+        Answer 답변1 = new Answer(유저, 질문, "답변1");
+        Answer 답변2 = new Answer(유저, 질문, "답변2");
+        질문.addAnswer(답변1);
+        질문.addAnswer(답변2);
+
+        // when
+        // 질문 오브젝트를 저장할 때
+        questionRepository.save(질문);
+
+        // then
+        // 답변 오브젝트들도 함께 저장되었음을 확인할 수 있다
+        List<Answer> answers = answerRepository.findByQuestion_IdAndDeletedFalse(질문.getId());
+        assertThat(answers).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("Question만 저장하면, Question의 Answer 리스트(answers)에 포함된 Answer들까지 함께 저장한다")
+    void 질문과함께답변까지저장_검증방법2() {
+        // given
+        // 질문과 그 질문에 대한 답변들이 오브젝트로 있는 상황에서
+        User 유저 = userRepository.save(new User("", "", "", ""));
+        Question 질문 = new Question("", "");
+        질문.writeBy(유저);
+        Answer 답변1 = new Answer(유저, 질문, "답변1");
+        Answer 답변2 = new Answer(유저, 질문, "답변2");
+        질문.addAnswer(답변1);
+        질문.addAnswer(답변2);
+
+        // when
+        // 질문 오브젝트를 저장할 때
+        questionRepository.save(질문);
+        em.clear();
+
+        // then
+        // 답변 오브젝트들도 함께 저장되었음을 확인할 수 있다
+        Question 찾은_질문 = questionRepository.findById(질문.getId())
+                .orElse(null);
+        assertThat(찾은_질문.getAnswers()).hasSize(2);
+    }
+
+    // 다음 테스트가 성공하려면
+    // @OneToMany에 orphanRemoval = true 옵션이 추가로 필요함
+//    @Test
+//    void removeAnswer() {
+//        User 유저 = userRepository.save(new User("", "", "", ""));
+//        Question 질문 = new Question("", "");
+//        질문.writeBy(유저);
+//        Answer 답변1 = new Answer(유저, 질문, "답변1");
+//        Answer 답변2 = new Answer(유저, 질문, "답변2");
+//        질문.addAnswer(답변1);
+//        질문.addAnswer(답변2);
+//        questionRepository.save(질문);
+//
+//        assertThat(질문.getAnswers()).hasSize(2);
+//        질문.getAnswers().remove(답변1);
+//        assertThat(질문.getAnswers()).hasSize(1);
+//        em.flush();
+//    }
+
+    // 현실적인 시나리오
+    @Test
+    @DisplayName("조회한 Question의 answers(Answer 리스트)에 Answer를 추가하기만 하면 Answer가 저장된다")
+    void 질문과함께답변까지저장_좀더_현실적() {
+        // given
+        // 질문이 저장되어 있고
+        User 유저 = userRepository.save(new User("", "", "", ""));
+        Question 질문 = new Question("", "");
+        질문.writeBy(유저);
+        questionRepository.save(질문);
+        em.clear();
+
+        // (여기까지가 질문자가 질문을 작성해 둔 상황)
+        // (그리고 답변 생성 요청이 들어와서 질문에 답변을 추가하는 상황이 이어진다)
+
+        // when: 찾은 질문의 답변 목록에 답변을 추가하기만 하면
+        Question 찾은_질문 = questionRepository.findById(질문.getId())
+                .orElse(null);
+        Answer 답변 = new Answer(유저, 질문, "답변");
+        찾은_질문.addAnswer(답변);
+
+        // then
+        // 답변이 저장됨을 확인할 수 있다
+        List<Answer> answers = answerRepository.findByQuestion_IdAndDeletedFalse(찾은_질문.getId());
+        assertThat(answers).hasSize(1);
+    }
 }

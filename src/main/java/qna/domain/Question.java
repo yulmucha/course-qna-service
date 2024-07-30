@@ -1,5 +1,6 @@
 package qna.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,7 +29,10 @@ public class Question {
     @Lob
     private String contents;
 
-    @OneToMany(mappedBy = "question")
+    @OneToMany(
+            mappedBy = "question",
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
+    )
     @Where(clause = "deleted = false")
     private List<Answer> answers = new ArrayList<>();
 
@@ -69,7 +73,7 @@ public class Question {
     }
 
     public void addAnswer(Answer answer) {
-        answer.toQuestion(this);
+        answer.toQuestion(this); // Answer가 Question을 참조하게 만드는 부분
         this.answers.add(answer);
     }
 
