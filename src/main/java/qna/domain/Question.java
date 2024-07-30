@@ -8,8 +8,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Question {
@@ -23,6 +27,10 @@ public class Question {
 
     @Lob
     private String contents;
+
+    @OneToMany(mappedBy = "question")
+    @Where(clause = "deleted = false")
+    private List<Answer> answers = new ArrayList<>();
 
     //    private Long writerId;
     @ManyToOne
@@ -62,6 +70,7 @@ public class Question {
 
     public void addAnswer(Answer answer) {
         answer.toQuestion(this);
+        this.answers.add(answer);
     }
 
     public Long getId() {
@@ -82,6 +91,10 @@ public class Question {
 
     public User getWriter() {
         return writer;
+    }
+
+    public List<Answer> getAnswers() {
+        return answers;
     }
 
     public boolean isDeleted() {

@@ -17,10 +17,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class QuestionRepositoryTest {
 
     @Autowired
-    private QuestionRepository questionRepository;
+    QuestionRepository questionRepository;
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    AnswerRepository answerRepository;
 
     @PersistenceContext
     EntityManager em;
@@ -151,5 +154,71 @@ class QuestionRepositoryTest {
         assertThatThrownBy(
                 () -> questionRepository.save(질문)
         ).isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
+    void getAnswersTest() {
+        // given
+        /*
+         * DB에 질문과 그 질문에 대한 2개의 답변들이 저장되어 있는 상황에서
+         * */
+        User 작성자 = userRepository.save(new User("", "", "", ""));
+        Question 질문 = new Question("제목", "내용");
+        질문.writeBy(작성자);
+        questionRepository.save(질문); // 캐싱됨
+//        Answer 답변1 = new Answer(); // writer와 question이 null
+//        답변1.writer = 작성자; // private이라서 불가능
+//        답변1.question = 질문; // private이라서 불가능
+        answerRepository.save(new Answer(null, 작성자, 질문, ""));
+        answerRepository.save(new Answer(null, 작성자, 질문, ""));
+        em.clear(); // 캐시 삭제
+
+        // when
+        /*
+         * QuestionRepository로 질문만 조회했을 때,
+         * 그 Question 오브젝트의 getAnswers() 메서드를 호출하면
+         * */
+        Question 찾은_질문 = questionRepository.findById(질문.getId())
+                .orElse(null);
+        List<Answer> 답변들 = 찾은_질문.getAnswers();
+
+        // then
+        /*
+         * return된 Answer 리스트에 답변 2개가 들어 있다.
+         * */
+        assertThat(답변들).hasSize(2);
+    }
+
+    @Test
+    void getAnswersTest2() {
+        // given
+        /*
+         * DB에 질문과 그 질문에 대한 답변 2개가 저장되어 있는데
+         * 그 중 하나는 삭제 처리된 상황에서
+         * */
+        User 작성자 = userRepository.save(new User("", "", "", ""));
+        Question 질문 = new Question("제목", "내용");
+        질문.writeBy(작성자);
+        questionRepository.save(질문);
+        answerRepository.save(new Answer(null, 작성자, 질문, ""));
+        Answer 답변 = new Answer(null, 작성자, 질문, "");
+        답변.setDeleted(true); // 답변 삭제 처리
+        answerRepository.save(답변);
+        em.clear();
+
+        // when
+        /*
+         * QuestionRepository로 질문만 조회했을 때,
+         * 그 Question 오브젝트의 getAnswers() 메서드를 호출하면
+         * */
+        Question 찾은_질문 = questionRepository.findById(질문.getId())
+                .orElse(null);
+        List<Answer> 답변들 = 찾은_질문.getAnswers();
+
+        // then
+        /*
+         * return된 Answer 리스트에 답변 1개가 들어 있다.
+         * */
+        assertThat(답변들).hasSize(1);
     }
 }
