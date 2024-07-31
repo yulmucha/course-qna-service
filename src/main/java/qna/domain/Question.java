@@ -106,21 +106,13 @@ public class Question {
         return deleted;
     }
 
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public DeleteHistory createHistory() {
+    public DeleteHistory delete() {
+        this.deleted = true;
         return new DeleteHistory(
                 ContentType.QUESTION,
                 id,
                 writer,
                 LocalDateTime.now());
-    }
-
-    public DeleteHistory delete() {
-        setDeleted(true);
-        return createHistory();
     }
 
     public void validateOwnership(User loginUser) {

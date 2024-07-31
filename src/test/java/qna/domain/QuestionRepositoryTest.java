@@ -84,7 +84,7 @@ class QuestionRepositoryTest {
         Question 질문2 = new Question("제목2", "내용");
         질문1.writeBy(작성자);
         질문2.writeBy(작성자);
-        질문2.setDeleted(true);
+        질문2.delete();
         questionRepository.save(질문1);
         questionRepository.save(질문2);
 
