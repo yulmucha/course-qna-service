@@ -11,6 +11,7 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import org.hibernate.annotations.Where;
+import qna.exception.CannotDeleteException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -107,6 +108,12 @@ public class Question {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public void validateOwnership(User loginUser) {
+        if (!isOwner(loginUser)) {
+            throw new CannotDeleteException("질문을 삭제할 권한이 없습니다.");
+        }
     }
 
     @Override

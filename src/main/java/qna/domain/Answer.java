@@ -66,7 +66,6 @@ public class Answer {
     }
 
     public boolean isOwner(User writer) {
-//        return this.writer.getId().equals(writer.getId());
         return this.writer.equals(writer);
     }
 
