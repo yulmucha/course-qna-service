@@ -5,6 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import qna.exception.CannotDeleteException;
 
+import java.time.LocalDateTime;
+
 public class QuestionTest {
     public static final Question Q1 = new Question("title1", "contents1").writeBy(UserTest.DORAEMON);
     public static final Question Q2 = new Question("title2", "contents2").writeBy(UserTest.SPONGEBOB);
@@ -82,5 +84,22 @@ public class QuestionTest {
 
         // when & then
         질문.validateAllAnswerOwnership(질문_작성자);
+    }
+
+    @Test
+    void deleteTest() {
+        User 질문_작성자 = new User("doraemon", "", "", "");
+        Question question = new Question(3L, "", "");
+        question.writeBy(질문_작성자);
+
+        DeleteHistory deleteHistory = question.delete();
+
+        Assertions.assertThat(question.isDeleted()).isTrue();
+        Assertions.assertThat(deleteHistory).isEqualTo(new DeleteHistory(
+                ContentType.QUESTION,
+                3L,
+                질문_작성자,
+                LocalDateTime.now()
+        ));
     }
 }

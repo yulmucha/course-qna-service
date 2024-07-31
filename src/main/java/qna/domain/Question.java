@@ -110,6 +110,19 @@ public class Question {
         this.deleted = deleted;
     }
 
+    public DeleteHistory createHistory() {
+        return new DeleteHistory(
+                ContentType.QUESTION,
+                id,
+                writer,
+                LocalDateTime.now());
+    }
+
+    public DeleteHistory delete() {
+        setDeleted(true);
+        return createHistory();
+    }
+
     public void validateOwnership(User loginUser) {
         if (!isOwner(loginUser)) {
             throw new CannotDeleteException("질문을 삭제할 권한이 없습니다.");
