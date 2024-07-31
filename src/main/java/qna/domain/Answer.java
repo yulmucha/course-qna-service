@@ -102,6 +102,16 @@ public class Answer {
         this.deleted = deleted;
     }
 
+    public DeleteHistory delete() {
+        setDeleted(true);
+        return new DeleteHistory(
+                ContentType.ANSWER,
+                id,
+                writer,
+                LocalDateTime.now()
+        );
+    }
+
     @Override
     public String toString() {
         return "Answer{" +
