@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import qna.exception.CannotDeleteException;
 import qna.exception.NotFoundException;
 import qna.exception.UnAuthorizedException;
 
@@ -100,6 +101,12 @@ public class Answer {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public void validateOwnership(User loginUser) {
+        if (!this.isOwner(loginUser)) {
+            throw new CannotDeleteException("다른 사람이 쓴 답변이 있어 삭제할 수 없습니다.");
+        }
     }
 
     public DeleteHistory delete() {
