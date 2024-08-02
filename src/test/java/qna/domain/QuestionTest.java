@@ -6,6 +6,10 @@ import org.junit.jupiter.api.Test;
 import qna.exception.CannotDeleteException;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class QuestionTest {
     public static final Question Q1 = new Question("title1", "contents1", UserTest.DORAEMON);
@@ -15,13 +19,13 @@ public class QuestionTest {
     @Test
     @DisplayName("질문 작성자가 같으면 ture를 return한다")
     void isOwnerTest1() {
-        Assertions.assertThat(Q1.isOwner(UserTest.DORAEMON)).isTrue();
+        assertThat(Q1.isOwner(UserTest.DORAEMON)).isTrue();
     }
 
     @Test
     @DisplayName("질문 작성자가 다르면 false를 return한다")
     void isOwnerTest2() {
-        Assertions.assertThat(Q1.isOwner(UserTest.SPONGEBOB)).isFalse();
+        assertThat(Q1.isOwner(UserTest.SPONGEBOB)).isFalse();
     }
 
     @Test
@@ -93,12 +97,75 @@ public class QuestionTest {
 
         DeleteHistory deleteHistory = question.deleteQuestion();
 
-        Assertions.assertThat(question.isDeleted()).isTrue();
-        Assertions.assertThat(deleteHistory).isEqualTo(new DeleteHistory(
+        assertThat(question.isDeleted()).isTrue();
+        assertThat(deleteHistory).isEqualTo(new DeleteHistory(
                 ContentType.QUESTION,
                 3L,
                 질문_작성자,
                 LocalDateTime.now()
         ));
+    }
+
+    @Test
+    @DisplayName("질문에 답변이 없을 때, 로그인한 사용자 본인이 작성한 질문이라면 삭제 성공 (히스토리 생성됨)")
+    void 답변없는_질문삭제_성공() {
+        User 질문_작성자 = new User("yul", "", "", "");
+        Question 질문 = new Question(1L, "눈이 떨리는 이유는 뭔가요?", "", 질문_작성자);
+
+        질문.validate(질문_작성자);
+        List<DeleteHistory> deleteHistories = 질문.delete();
+
+        assertThat(질문.isDeleted()).isTrue(); // 질문이 삭제된 상태인지 체크
+        assertThat(deleteHistories).containsExactly( // 삭제 이력이 일치하는지 체크ㄴ
+                new DeleteHistory(
+                        ContentType.QUESTION,
+                        질문.getId(),
+                        질문.getWriter(),
+                        LocalDateTime.now()
+                )
+        );
+    }
+
+    @Test
+    @DisplayName("질문에 답변이 없을 때, 로그인한 사용자 본인이 작성한 질문이 아니라면 질문 삭제 실패")
+    void 답변없는_질문삭제_실패() {
+        User 질문_작성자 = new User("yul", "", "", "");
+        User 질문_작성자가_아닌_유저 = new User("dora", "", "", "");
+        Question 질문 = new Question(1L, "눈이 떨리는 이유는 뭔가요?", "", 질문_작성자);
+
+        assertThatThrownBy(
+                () -> 질문.validate(질문_작성자가_아닌_유저)
+        ).isInstanceOf(CannotDeleteException.class);
+    }
+
+    @Test
+    @DisplayName("질문에 답변이 있을 때, 로그인한 사용자가 작성한 질문이고 본인이 작성한 답변만 존재한다면, 질문 및 답변 삭제 성공 (히스토리 생성됨)")
+    void 본인답변_질문삭제_성공() {
+        User 질문_작성자 = new User("yul", "", "", "");
+        Question 질문 = new Question(1L, "눈이 떨리는 이유는 뭔가요?", "", 질문_작성자);
+        Answer 답변 = new Answer(10L, 질문_작성자, 질문, "마그네슘이 부족할 수도");
+        질문.addAnswer(답변);
+        
+        질문.validate(질문_작성자);
+        List<DeleteHistory> 삭제이력목록 = 질문.delete();
+
+        assertThat(질문.isDeleted()).isTrue();
+        assertThat(삭제이력목록).containsExactlyInAnyOrder(
+                new DeleteHistory(ContentType.QUESTION, 질문.getId(), 질문.getWriter(), LocalDateTime.now()),
+                new DeleteHistory(ContentType.ANSWER, 답변.getId(), 답변.getWriter(), LocalDateTime.now())
+        );
+    }
+
+    @Test
+    @DisplayName("질문에 답변이 있을 때, 로그인한 사용자 본인이 작성한 질문이라도 타인이 작성한 답변이 존재한다면, 삭제 실패")
+    void 타인답변_질문삭제_실패() {
+        User 질문_작성자 = new User("yul", "", "", "");
+        User 답변_작성자 = new User("dora", "", "", "");
+        Question 질문 = new Question(1L, "눈이 떨리는 이유는 뭔가요?", "", 질문_작성자);
+        질문.addAnswer(new Answer(10L, 답변_작성자, 질문, "마그네슘이 부족할 수도"));
+
+        assertThatThrownBy(
+                () -> 질문.validate(질문_작성자)
+        ).isInstanceOf(CannotDeleteException.class);
     }
 }
