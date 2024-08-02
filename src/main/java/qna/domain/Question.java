@@ -54,14 +54,15 @@ public class Question {
     protected Question() {
     }
 
-    public Question(String title, String contents) {
-        this(null, title, contents);
+    public Question(String title, String contents, User writer) {
+        this(null, title, contents, writer);
     }
 
-    public Question(Long id, String title, String contents) {
+    public Question(Long id, String title, String contents, User writer) {
         this.id = id;
         this.title = title;
         this.contents = contents;
+        this.writer = writer;
     }
 
     public Question writeBy(User writer) {

@@ -41,7 +41,7 @@ class QnaServiceTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        question = new Question(1L, "title1", "contents1").writeBy(UserTest.DORAEMON);
+        question = new Question(1L, "title1", "contents1", UserTest.DORAEMON);
         answer = new Answer(1L, UserTest.DORAEMON, question, "Answers Contents1");
         question.addAnswer(answer);
     }

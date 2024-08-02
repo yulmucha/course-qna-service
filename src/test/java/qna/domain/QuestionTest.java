@@ -8,8 +8,8 @@ import qna.exception.CannotDeleteException;
 import java.time.LocalDateTime;
 
 public class QuestionTest {
-    public static final Question Q1 = new Question("title1", "contents1").writeBy(UserTest.DORAEMON);
-    public static final Question Q2 = new Question("title2", "contents2").writeBy(UserTest.SPONGEBOB);
+    public static final Question Q1 = new Question("title1", "contents1", UserTest.DORAEMON);
+    public static final Question Q2 = new Question("title2", "contents2", UserTest.SPONGEBOB);
 
 
     @Test
@@ -30,7 +30,7 @@ public class QuestionTest {
         // given
         User 질문_작성자 = new User("a", "", "", "");
         User 다른_유저 = new User("b", "", "", "");
-        Question 질문 = new Question("title1", "contents1").writeBy(질문_작성자);
+        Question 질문 = new Question("title1", "contents1", 질문_작성자);
 
         // when & then
         Assertions.assertThatThrownBy(
@@ -43,7 +43,7 @@ public class QuestionTest {
     void validateOwnershipTest2() {
         // given
         User 질문_작성자 = new User("a", "", "", "");
-        Question 질문 = new Question("title1", "contents1").writeBy(질문_작성자);
+        Question 질문 = new Question("title1", "contents1", 질문_작성자);
 
         // when & then
         질문.validateOwnership(질문_작성자);
@@ -59,7 +59,7 @@ public class QuestionTest {
         // 한 답변의 작성자가 질문 작성자와 다른 유저임.
         User 질문_작성자 = new User("doraemon", "", "", "");
         User 다른_유저 = new User("sponge_bob", "", "", "");
-        Question 질문 = new Question("DI는 왜 중요한가요?", "제곧내").writeBy(질문_작성자);
+        Question 질문 = new Question("DI는 왜 중요한가요?", "제곧내", 질문_작성자);
         Answer 답변1 = new Answer(질문_작성자, 질문, "결합도를 낮춰 줍니다");
         Answer 답변2 = new Answer(다른_유저, 질문, "유연성을 높여 줍니다");
         질문.addAnswer(답변1);
@@ -76,7 +76,7 @@ public class QuestionTest {
     void validateAllAnswerOwnership2() {
         // given
         User 질문_작성자 = new User("doraemon", "", "", "");
-        Question 질문 = new Question("DI는 왜 중요한가요?", "제곧내").writeBy(질문_작성자);
+        Question 질문 = new Question("DI는 왜 중요한가요?", "제곧내", 질문_작성자);
         Answer 답변1 = new Answer(질문_작성자, 질문, "결합도를 낮춰 줍니다");
         Answer 답변2 = new Answer(질문_작성자, 질문, "유연성을 높여 줍니다");
         질문.addAnswer(답변1);
@@ -89,8 +89,7 @@ public class QuestionTest {
     @Test
     void deleteTest() {
         User 질문_작성자 = new User("doraemon", "", "", "");
-        Question question = new Question(3L, "", "");
-        question.writeBy(질문_작성자);
+        Question question = new Question(3L, "", "", 질문_작성자);
 
         DeleteHistory deleteHistory = question.delete();
 

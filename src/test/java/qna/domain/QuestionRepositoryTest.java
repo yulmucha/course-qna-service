@@ -34,8 +34,7 @@ class QuestionRepositoryTest {
         // given
         // - Question 객체를 생성한다. (제목: "제목", 내용: "내용")
         User 작성자 = userRepository.save(new User("", "", "", ""));
-        Question 질문 = new Question("제목", "내용");
-        질문.writeBy(작성자);
+        Question 질문 = new Question("제목", "내용", 작성자);
         assertThat(질문.getId()).isNull();
 
         // when
@@ -57,10 +56,8 @@ class QuestionRepositoryTest {
         // given
         // - 2개의 Question을 생성하고 저장한다. (제목1: "제목1", 내용1: "내용1"), (제목2: "제목2", 내용2: "내용2")
         User 작성자 = userRepository.save(new User("", "", "", ""));
-        Question 질문1 = new Question("제목", "내용");
-        Question 질문2 = new Question("제목", "내용");
-        질문1.writeBy(작성자);
-        질문2.writeBy(작성자);
+        Question 질문1 = new Question("제목", "내용", 작성자);
+        Question 질문2 = new Question("제목", "내용", 작성자);
         questionRepository.saveAll(List.of(질문1, 질문2));
 
         // when
@@ -80,10 +77,8 @@ class QuestionRepositoryTest {
         // - 2개의 Question을 생성한다. (제목1: "제목1", 내용1: "내용1"), (제목2: "제목2", 내용2: "내용2")
         // - 두 번째 Question의 deleted를 true로 설정하고 저장한다.
         User 작성자 = userRepository.save(new User("", "", "", ""));
-        Question 질문1 = new Question("제목1", "내용");
-        Question 질문2 = new Question("제목2", "내용");
-        질문1.writeBy(작성자);
-        질문2.writeBy(작성자);
+        Question 질문1 = new Question("제목1", "내용", 작성자);
+        Question 질문2 = new Question("제목2", "내용", 작성자);
         질문2.delete();
         questionRepository.save(질문1);
         questionRepository.save(질문2);
@@ -105,8 +100,7 @@ class QuestionRepositoryTest {
         // given
         // - Question을 생성하고 저장한다. (제목: "제목", 내용: "내용")
         User 작성자 = userRepository.save(new User("", "", "", ""));
-        Question 질문 = new Question("제목", "내용");
-        질문.writeBy(작성자);
+        Question 질문 = new Question("제목", "내용", 작성자);
         questionRepository.save(질문);
 
         // when
@@ -127,8 +121,7 @@ class QuestionRepositoryTest {
         // given
         // - 제목이 null인 Question 객체를 생성한다.
         User 작성자 = userRepository.save(new User("", "", "", ""));
-        Question 질문 = new Question(null, "");
-        질문.writeBy(작성자);
+        Question 질문 = new Question(null, "", 작성자);
 
         // when & then
         // - 제목이 null인 Question 객체를 저장하면
@@ -145,8 +138,7 @@ class QuestionRepositoryTest {
         // - 101자의 제목을 가진 Question 객체를 생성한다.
         String longTitle = "a".repeat(101);
         User 작성자 = userRepository.save(new User("", "", "", ""));
-        Question 질문 = new Question(longTitle, "내용");
-        질문.writeBy(작성자);
+        Question 질문 = new Question(longTitle, "내용", 작성자);
 
         // when & then
         // - 101자의 제목을 가진 Question 객체를 저장한다.
@@ -163,8 +155,7 @@ class QuestionRepositoryTest {
          * DB에 질문과 그 질문에 대한 2개의 답변들이 저장되어 있는 상황에서
          * */
         User 작성자 = userRepository.save(new User("", "", "", ""));
-        Question 질문 = new Question("제목", "내용");
-        질문.writeBy(작성자);
+        Question 질문 = new Question("제목", "내용", 작성자);
         questionRepository.save(질문); // 캐싱됨
 //        Answer 답변1 = new Answer(); // writer와 question이 null
 //        답변1.writer = 작성자; // private이라서 불가능
@@ -197,8 +188,7 @@ class QuestionRepositoryTest {
          * 그 중 하나는 삭제 처리된 상황에서
          * */
         User 작성자 = userRepository.save(new User("", "", "", ""));
-        Question 질문 = new Question("제목", "내용");
-        질문.writeBy(작성자);
+        Question 질문 = new Question("제목", "내용", 작성자);
         questionRepository.save(질문);
         answerRepository.save(new Answer(null, 작성자, 질문, ""));
         Answer 답변 = new Answer(null, 작성자, 질문, "");
@@ -228,8 +218,7 @@ class QuestionRepositoryTest {
         // given
         // 질문과 그 질문에 대한 답변들이 오브젝트로 있는 상황에서
         User 유저 = userRepository.save(new User("", "", "", ""));
-        Question 질문 = new Question("", "");
-        질문.writeBy(유저);
+        Question 질문 = new Question("", "", 유저);
         Answer 답변1 = new Answer(유저, 질문, "답변1");
         Answer 답변2 = new Answer(유저, 질문, "답변2");
         질문.addAnswer(답변1);
@@ -251,8 +240,7 @@ class QuestionRepositoryTest {
         // given
         // 질문과 그 질문에 대한 답변들이 오브젝트로 있는 상황에서
         User 유저 = userRepository.save(new User("", "", "", ""));
-        Question 질문 = new Question("", "");
-        질문.writeBy(유저);
+        Question 질문 = new Question("", "", 유저);
         Answer 답변1 = new Answer(유저, 질문, "답변1");
         Answer 답변2 = new Answer(유저, 질문, "답변2");
         질문.addAnswer(답변1);
@@ -296,8 +284,7 @@ class QuestionRepositoryTest {
         // given
         // 질문이 저장되어 있고
         User 유저 = userRepository.save(new User("", "", "", ""));
-        Question 질문 = new Question("", "");
-        질문.writeBy(유저);
+        Question 질문 = new Question("", "", 유저);
         questionRepository.save(질문);
         em.clear();
 

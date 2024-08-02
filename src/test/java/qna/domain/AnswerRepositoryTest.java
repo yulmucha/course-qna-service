@@ -34,8 +34,7 @@ public class AnswerRepositoryTest {
     @BeforeEach
     void setUp() {
         this.user = userRepository.save(new User("user1", "password", "name", "email@test.com"));
-        Question 질문 = new Question("제목", "내용");
-        질문.writeBy(user);
+        Question 질문 = new Question("제목", "내용", user);
         this.question = questionRepository.save(질문);
     }
 
