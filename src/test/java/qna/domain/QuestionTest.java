@@ -87,11 +87,11 @@ public class QuestionTest {
     }
 
     @Test
-    void deleteTest() {
+    void deleteQuestionTest() {
         User 질문_작성자 = new User("doraemon", "", "", "");
         Question question = new Question(3L, "", "", 질문_작성자);
 
-        DeleteHistory deleteHistory = question.delete();
+        DeleteHistory deleteHistory = question.deleteQuestion();
 
         Assertions.assertThat(question.isDeleted()).isTrue();
         Assertions.assertThat(deleteHistory).isEqualTo(new DeleteHistory(

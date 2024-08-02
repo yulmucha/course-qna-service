@@ -107,7 +107,14 @@ public class Question {
         return deleted;
     }
 
-    public DeleteHistory delete() {
+    public List<DeleteHistory> delete() {
+        List<DeleteHistory> deleteHistories = new ArrayList<>();
+        deleteHistories.add(this.deleteQuestion());
+        deleteHistories.addAll(this.deleteAnswers());
+        return deleteHistories;
+    }
+
+    public DeleteHistory deleteQuestion() {
         this.deleted = true;
         return new DeleteHistory(
                 ContentType.QUESTION,

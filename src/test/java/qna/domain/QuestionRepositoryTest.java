@@ -79,7 +79,7 @@ class QuestionRepositoryTest {
         User 작성자 = userRepository.save(new User("", "", "", ""));
         Question 질문1 = new Question("제목1", "내용", 작성자);
         Question 질문2 = new Question("제목2", "내용", 작성자);
-        질문2.delete();
+        질문2.deleteQuestion();
         questionRepository.save(질문1);
         questionRepository.save(질문2);
 
